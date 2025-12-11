@@ -1,0 +1,14 @@
+services:
+  view_crafter:
+    build:
+      context: .
+      dockerfile: Dockerfile2
+    volumes:
+      - ./test:/app/test
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
