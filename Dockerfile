@@ -1,6 +1,4 @@
-FROM docker.io/pytorch/pytorch:2.3.1-cuda11.8-cudnn8-devel
-ENV TZ=UTC
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+FROM docker.io/nvidia/cuda:11.7.1-cudnn8-devel-ubuntu22.04
 
 RUN apt-get update && apt-get install -y \
     git \
@@ -13,9 +11,17 @@ RUN apt-get update && apt-get install -y \
     libswscale-dev \
     libswresample-dev \
     libavfilter-dev \
+    python3 \ 
+    python3-pip \
     && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir /app
+
+# Ensure python points to python3
+RUN ln -s /usr/bin/python3 /usr/bin/python
+
+# Upgrade pip to avoid issues
+RUN pip install --upgrade pip
 
 # Install Cython<3 and numpy to build av
 RUN pip install "Cython<3" numpy
@@ -33,4 +39,3 @@ WORKDIR /app
 #RUN mkdir -p checkpoints/
 #RUN wget https://download.europe.naverlabs.com/ComputerVision/DUSt3R/DUSt3R_ViTLarge_BaseDecoder_512_dpt.pth -P checkpoints/
 #RUN wget https://huggingface.co/Drexubery/ViewCrafter_25/resolve/main/model.ckpt -P checkpoints/
-RUN sh run.sh
