@@ -48,7 +48,8 @@ RUN wget https://huggingface.co/Drexubery/ViewCrafter_25/resolve/main/model.ckpt
 # Copy source code
 COPY . /app
 WORKDIR /app
-RUN sed s/127.0.0.1/0.0.0.0/ gradio_app.py
+RUN sed -i s/127.0.0.1/0.0.0.0/ gradio_app.py
+
 # Start gradio app
 EXPOSE 80
 CMD ["python3", "gradio_app.py"]
