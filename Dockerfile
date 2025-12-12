@@ -32,10 +32,17 @@ RUN pip install av==10.0.0 --no-build-isolation
 COPY requirements.txt /app/requirements.txt
 RUN pip install -r /app/requirements.txt
 
+ENV FORCE_CUDA=1
+ENV TORCH_CUDA_ARCH_LIST="6.0 6.1 7.0 7.5 8.0 8.6+PTX"
 RUN pip install "git+https://github.com/facebookresearch/pytorch3d.git@v0.7.5"
+
+# Pre-download OpenCLIP model to make image immutable
+RUN python3 -c "import open_clip; open_clip.create_model_and_transforms('ViT-H-14', pretrained='laion2b_s32b_b79k')"
+
+# Download checkpoints
+RUN mkdir -p /app/checkpoints/
+RUN wget https://download.europe.naverlabs.com/ComputerVision/DUSt3R/DUSt3R_ViTLarge_BaseDecoder_512_dpt.pth -P /app/checkpoints/
+RUN wget https://huggingface.co/Drexubery/ViewCrafter_25/resolve/main/model.ckpt -P /app/checkpoints/
 
 COPY . /app
 WORKDIR /app
-#RUN mkdir -p checkpoints/
-#RUN wget https://download.europe.naverlabs.com/ComputerVision/DUSt3R/DUSt3R_ViTLarge_BaseDecoder_512_dpt.pth -P checkpoints/
-#RUN wget https://huggingface.co/Drexubery/ViewCrafter_25/resolve/main/model.ckpt -P checkpoints/
