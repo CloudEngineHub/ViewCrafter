@@ -2,6 +2,7 @@ FROM docker.io/nvidia/cuda:11.7.1-cudnn8-devel-ubuntu22.04
 
 RUN apt-get update && apt-get install -y \
     git \
+    wget \
     pkg-config \
     build-essential \
     libavformat-dev \
@@ -15,8 +16,6 @@ RUN apt-get update && apt-get install -y \
     python3-pip \
     && rm -rf /var/lib/apt/lists/*
 
-RUN mkdir /app
-
 # Ensure python points to python3
 RUN ln -s /usr/bin/python3 /usr/bin/python
 
@@ -29,9 +28,11 @@ RUN pip install "Cython<3" numpy
 # Install av with no build isolation to use the installed Cython<3
 RUN pip install av==10.0.0 --no-build-isolation
 
+# Install requirements
 COPY requirements.txt /app/requirements.txt
 RUN pip install -r /app/requirements.txt
 
+# Install pytorch3d
 ENV FORCE_CUDA=1
 ENV TORCH_CUDA_ARCH_LIST="6.0 6.1 7.0 7.5 8.0 8.6+PTX"
 RUN pip install "git+https://github.com/facebookresearch/pytorch3d.git@v0.7.5"
@@ -44,5 +45,10 @@ RUN mkdir -p /app/checkpoints/
 RUN wget https://download.europe.naverlabs.com/ComputerVision/DUSt3R/DUSt3R_ViTLarge_BaseDecoder_512_dpt.pth -P /app/checkpoints/
 RUN wget https://huggingface.co/Drexubery/ViewCrafter_25/resolve/main/model.ckpt -P /app/checkpoints/
 
+# Copy source code
 COPY . /app
 WORKDIR /app
+RUN sed s/127.0.0.1/0.0.0.0/ gradio_app.py
+# Start gradio app
+EXPOSE 80
+CMD ["python3", "gradio_app.py"]

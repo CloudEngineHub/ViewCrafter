@@ -5,6 +5,8 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./test:/app/test
+    ports:
+      - "80:80"
     deploy:
       resources:
         reservations:
