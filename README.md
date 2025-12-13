@@ -168,6 +168,17 @@ Download pretrained [ViewCrafter_25](https://huggingface.co/Drexubery/ViewCrafte
   python gradio_app.py 
 ```
 
+### 3. Local Gradio demo with Docker
+
+If you struggle with ⚙️ Setup, you can also start Local Gradio demo with the following command. 
+You need to install Docker with CUDA support in advance.
+
+```
+docker compose up --remove-orphans
+```
+
+If you want to change the port number, please modify compose.yml.
+
 ## 📈 Evaluation
 
 We provide a demo script to evaluate single-view novel view synthesis:
